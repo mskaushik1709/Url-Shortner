@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>Welcome, {{ session.username }}!</h1>
+    <form id="shorten-form">
+        <input type="url" id="url" placeholder="Enter URL" required>
+        <input type="text" id="custom_short_url" placeholder="Custom short URL (optional)">
+        <input type="number" id="expiration_days" placeholder="Expiration in days (optional)">
+        <button type="submit">Shorten</button>
+    </form>
+    <p id="result"></p>
+    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

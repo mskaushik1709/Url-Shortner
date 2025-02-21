@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+
+        /* Truncate long URLs */
+        .truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px; /* Adjust as needed */
+            display: inline-block;
+        }
+        .truncate:hover {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: unset;
+            max-width: none;
+        }
+
+        /* Copy button */
+        .copy-btn {
+            background: none;
+            border: none;
+            color: blue;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        /* QR code styling */
+        .qr-code {
+            width: 100px;
+            height: 100px;
+        }
+
+        /* Click trends graph */
+        .click-trends {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome, {{ username }}!</h1>
+    <h2>Your URL History</h2>
+
+    <!-- Row count -->
+    <div class="row-count">
+        Showing {{ start + 1 }}-{{ end }} of {{ total }} entries
+    </div>
+
+    <!-- Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Short URL</th>
+                <th>Original URL</th>
+                <th>Created At</th>
+                <th>Expires At</th>
+                <th>Total Clicks</th>
+                <th>Clicks</th>
+                <th>QR Code</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in history[start:end] %}
+            <tr>
+                <td>
+                    <span class="truncate">{{ item.short_url }}</span>
+                    <button class="copy-btn" onclick="copyToClipboard('{{ item.short_url }}')">Copy</button>
+                </td>
+                <td>
+                    <span class="truncate">{{ item.original_url }}</span>
+                    <button class="copy-btn" onclick="copyToClipboard('{{ item.original_url }}')">Copy</button>
+                </td>
+                <td>{{ item.created_at }}</td>
+                <td>{{ item.expires_at or "No expiration" }}</td>
+                <td>{{ item.clicks|length }}</td>
+                <td>
+                    <ul>
+                        {% for click in item.clicks %}
+                        <li>
+                            <strong>Device:</strong> {{ click.get('device', 'Unknown') }}<br>
+                            <strong>OS:</strong> {{ click.get('os', 'Unknown') }}<br>
+                            <strong>Browser:</strong> {{ click.get('browser', 'Unknown') }}<br>
+                            <strong>Location:</strong> {{ click.get('city', 'Unknown') }}, {{ click.get('region', 'Unknown') }}, {{ click.get('country', 'Unknown') }}<br>
+                            <strong>Referrer:</strong> {{ click.get('referrer', 'Direct') }}<br>
+                            <strong>Time:</strong> {{ click.get('timestamp', 'Unknown') }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <img src="{{ url_for('generate_qr', short_url=item.short_url.split('/')[-1]) }}" alt="QR Code" class="qr-code">
+                    <br>
+                    <a href="{{ url_for('generate_qr', short_url=item.short_url.split('/')[-1]) }}" download="qrcode.png">Download</a>
+                </td>
+                <td>
+                    <form action="{{ url_for('delete_history', short_url=item.short_url.split('/')[-1]) }}" method="POST">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Click trends graph -->
+    <div class="click-trends">
+        <h2>Click Trends</h2>
+        <img src="{{ plot_url }}" alt="Click Trends">
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        {% if end < total %}
+            <a href="{{ url_for('dashboard', page=page + 1) }}">More</a>
+        {% endif %}
+    </div>
+
+    <!-- Action buttons -->
+    <div class="action-buttons">
+        <a href="{{ url_for('index') }}">Shorten Another URL</a>
+        <a href="{{ url_for('download_history') }}">Download History</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <!-- JavaScript for copy to clipboard -->
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Copied to clipboard: " + text);
+            });
+        }
+    </script>
+</body>
+</html>

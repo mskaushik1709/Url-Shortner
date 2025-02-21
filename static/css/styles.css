@@ -1,0 +1,126 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+}
+
+input {
+    padding: 10px;
+    margin: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Prevent table from expanding */
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    word-wrap: break-word; /* Wrap long URLs */
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    margin-bottom: 10px;
+}
+/* Fixed refresh button */
+.refresh-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Truncate long URLs */
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px; /* Adjust as needed */
+    display: inline-block;
+}
+.truncate:hover {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    max-width: none;
+}
+
+/* Copy button */
+.copy-btn {
+    background: none;
+    border: none;
+    color: blue;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+/* Pagination and row count */
+.pagination {
+    margin-top: 20px;
+}
+.row-count {
+    margin-bottom: 10px;
+}
+
+/* Button styling */
+.action-buttons {
+    margin-top: 20px;
+}
+.action-buttons a {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+.action-buttons a:hover {
+    background-color: #45a049;
+}
+
+/* QR code styling */
+.qr-code {
+    width: 100px;
+    height: 100px;
+}
+
+/* Download link styling */
+a[download] {
+    display: inline-block;
+    margin-top: 5px;
+    color: blue;
+    text-decoration: none;
+}
+a[download]:hover {
+    text-decoration: underline;
+}
