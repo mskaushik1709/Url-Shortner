@@ -10,7 +10,6 @@ from user_agents import parse
 from io import BytesIO
 import qrcode
 
-
 import requests
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
