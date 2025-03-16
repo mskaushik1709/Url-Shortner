@@ -12,9 +12,20 @@
             {
                 "device_browser": "Linux  - Firefox 130.0",
                 "timestamp": "2025-02-20 14:13:31"
+            },
+            {
+                "device": "Other",
+                "os": "Linux ",
+                "browser": "Firefox 130.0",
+                "timestamp": "2025-03-16 13:07:24",
+                "city": "Unknown",
+                "region": "Unknown",
+                "country": "Unknown",
+                "referrer": "Direct"
             }
         ],
-        "created_by": "msk"
+        "created_by": "msk",
+        "name": "k"
     },
     "abc": {
         "short_url": "http://localhost:5000/abc",
@@ -44,6 +55,191 @@
                 "timestamp": "2025-02-21 20:05:14"
             }
         ],
+        "created_by": "msk"
+    },
+    "8b67fa02": {
+        "short_url": "http://localhost:5000/8b67fa02",
+        "original_url": "https://www.shiksha.com/studyabroad/germany/universities/university-of-bremen/admissions",
+        "created_at": "2025-02-21 21:58:52",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk",
+        "name": "dfdvd"
+    },
+    "5a35ef66": {
+        "short_url": "http://localhost:5000/5a35ef66",
+        "original_url": "https://www.shiksha.com/studyabroad/germany/universities/braunschweig-university-of-technology/courses/ms-bc?scrollToBipTuples",
+        "created_at": "2025-02-21 21:59:07",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "dd4adc97": {
+        "short_url": "http://localhost:5000/dd4adc97",
+        "original_url": "https://www.shiksha.com/studyabroad/germany/universities/university-of-regensburg/courses",
+        "created_at": "2025-02-21 21:59:18",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "bc3ed50d": {
+        "short_url": "http://localhost:5000/bc3ed50d",
+        "original_url": "https://www.shiksha.com/studyabroad/germany/universities/university-of-applied-sciences-w-rzburg-schweinfurt/courses/ms-bc?scrollToBipTuples",
+        "created_at": "2025-02-21 21:59:36",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "514c36f8": {
+        "short_url": "http://localhost:5000/514c36f8",
+        "original_url": "https://www.shiksha.com/studyabroad/germany/universities/hof-university-of-applied-sciences/courses/ms-bc?scrollToBipTuples",
+        "created_at": "2025-02-21 21:59:46",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "387353b9": {
+        "short_url": "http://localhost:5000/387353b9",
+        "original_url": "https://chat.deepseek.com/a/chat/s/cbedd38f-131f-4811-a7a0-736e568d29b4",
+        "created_at": "2025-02-21 22:00:09",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "fb2954f5": {
+        "short_url": "http://localhost:5000/fb2954f5",
+        "original_url": "https://www.shiksha.com/studyabroad/ms-in-artificial-intelligence-from-abroad-ds11509429?sb[]=4&ex[]=3300&fe[]=f0&ed[]=et_20&uaf[]=specialization&uaf[]=exam&uaf[]=fees&sby=popularity&rf=filters",
+        "created_at": "2025-02-21 22:00:19",
+        "expires_at": null,
+        "clicks": [
+            {
+                "device": "Other",
+                "os": "Linux ",
+                "browser": "Firefox 130.0",
+                "timestamp": "2025-02-21 22:05:49",
+                "city": "Unknown",
+                "region": "Unknown",
+                "country": "Unknown",
+                "referrer": "Direct"
+            },
+            {
+                "device": "Other",
+                "os": "Linux ",
+                "browser": "Firefox 130.0",
+                "timestamp": "2025-02-21 22:06:54",
+                "city": "Unknown",
+                "region": "Unknown",
+                "country": "Unknown",
+                "referrer": "Direct"
+            },
+            {
+                "device": "Other",
+                "os": "Linux ",
+                "browser": "Firefox 130.0",
+                "timestamp": "2025-02-21 22:48:33",
+                "city": "Unknown",
+                "region": "Unknown",
+                "country": "Unknown",
+                "referrer": "Direct"
+            }
+        ],
+        "created_by": "msk"
+    },
+    "acbb41fa": {
+        "short_url": "http://localhost:5000/acbb41fa",
+        "original_url": "https://www.geeksforgeeks.org/top-10-machine-learning-project-ideas-that-you-can-implement/?ref=ml_lbp",
+        "created_at": "2025-03-16 13:08:34",
+        "expires_at": null,
+        "clicks": [
+            {
+                "device": "Other",
+                "os": "Linux ",
+                "browser": "Firefox 130.0",
+                "timestamp": "2025-03-16 13:08:45",
+                "city": "Unknown",
+                "region": "Unknown",
+                "country": "Unknown",
+                "referrer": "Direct"
+            }
+        ],
+        "created_by": "msk"
+    },
+    "96f7ffdd": {
+        "short_url": "http://localhost:5000/96f7ffdd",
+        "original_url": "https://www.online-python.com/",
+        "created_at": "2025-03-16 14:43:04",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "37eb7e3e": {
+        "short_url": "http://localhost:5000/37eb7e3e",
+        "original_url": "https://www.w3schools.com/python/default.asp",
+        "created_at": "2025-03-16 14:43:04",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "a6bec746": {
+        "short_url": "http://localhost:5000/a6bec746",
+        "original_url": "https://www.programiz.com/python-programming",
+        "created_at": "2025-03-16 14:43:04",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "01b77173": {
+        "short_url": "http://localhost:5000/01b77173",
+        "original_url": "https://www.online-python.com/",
+        "name": "ExcelData1",
+        "created_at": "2025-03-16 15:55:16",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "5e94144a": {
+        "short_url": "http://localhost:5000/5e94144a",
+        "original_url": "https://www.w3schools.com/python/default.asp",
+        "name": "ExcelData2",
+        "created_at": "2025-03-16 15:55:16",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "54e170ba": {
+        "short_url": "http://localhost:5000/54e170ba",
+        "original_url": "https://www.programiz.com/python-programming",
+        "name": "ExcelData3",
+        "created_at": "2025-03-16 15:55:16",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "84785dbe": {
+        "short_url": "http://localhost:5000/84785dbe",
+        "original_url": "https://www.online-python.com/",
+        "name": "ExcelData1",
+        "created_at": "2025-03-16 16:21:17",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "3e2c533f": {
+        "short_url": "http://localhost:5000/3e2c533f",
+        "original_url": "https://www.w3schools.com/python/default.asp",
+        "name": "ExcelData2",
+        "created_at": "2025-03-16 16:21:17",
+        "expires_at": null,
+        "clicks": [],
+        "created_by": "msk"
+    },
+    "d5514d25": {
+        "short_url": "http://localhost:5000/d5514d25",
+        "original_url": "https://www.programiz.com/python-programming",
+        "name": "ExcelData3",
+        "created_at": "2025-03-16 16:21:17",
+        "expires_at": null,
+        "clicks": [],
         "created_by": "msk"
     }
 }

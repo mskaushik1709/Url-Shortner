@@ -5,61 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <style>
-        /* Table styling */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-
-        /* Truncate long URLs */
-        .truncate {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 200px; /* Adjust as needed */
-            display: inline-block;
-        }
-        .truncate:hover {
-            white-space: normal;
-            overflow: visible;
-            text-overflow: unset;
-            max-width: none;
-        }
-
-        /* Copy button */
-        .copy-btn {
-            background: none;
-            border: none;
-            color: blue;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-
-        /* QR code styling */
-        .qr-code {
-            width: 100px;
-            height: 100px;
-        }
-
-        /* Click trends graph */
-        .click-trends {
-            margin-top: 20px;
-        }
-    </style>
 </head>
 <body>
+    <button class="refresh-btn" onclick="window.location.reload()">Refresh</button>
     <h1>Welcome, {{ username }}!</h1>
     <h2>Your URL History</h2>
 
@@ -72,6 +20,8 @@
     <table>
         <thead>
             <tr>
+                <th>SL. No</th>
+                <th>Name</th>
                 <th>Short URL</th>
                 <th>Original URL</th>
                 <th>Created At</th>
@@ -85,30 +35,49 @@
         <tbody>
             {% for item in history[start:end] %}
             <tr>
+                <td>{{ loop.index + start }}</td>
                 <td>
-                    <span class="truncate">{{ item.short_url }}</span>
+                    <span>{{ item.name }}</span>
+                    <form action="{{ url_for('update_name', short_url=item.short_url.split('/')[-1]) }}" method="POST">
+                        <input type="text" name="name" placeholder="Edit Name">
+                        <button type="submit">Save</button>
+                    </form>
+                </td>
+
+
+                
+                <td>
+                    <span class="truncate" onclick="toggleExpand(this)">{{ item.short_url }}</span>
                     <button class="copy-btn" onclick="copyToClipboard('{{ item.short_url }}')">Copy</button>
                 </td>
                 <td>
-                    <span class="truncate">{{ item.original_url }}</span>
+                    <span class="truncate" onclick="toggleExpand(this)">{{ item.original_url }}</span>
                     <button class="copy-btn" onclick="copyToClipboard('{{ item.original_url }}')">Copy</button>
                 </td>
+
+
                 <td>{{ item.created_at }}</td>
                 <td>{{ item.expires_at or "No expiration" }}</td>
                 <td>{{ item.clicks|length }}</td>
                 <td>
-                    <ul>
-                        {% for click in item.clicks %}
-                        <li>
-                            <strong>Device:</strong> {{ click.get('device', 'Unknown') }}<br>
-                            <strong>OS:</strong> {{ click.get('os', 'Unknown') }}<br>
-                            <strong>Browser:</strong> {{ click.get('browser', 'Unknown') }}<br>
-                            <strong>Location:</strong> {{ click.get('city', 'Unknown') }}, {{ click.get('region', 'Unknown') }}, {{ click.get('country', 'Unknown') }}<br>
-                            <strong>Referrer:</strong> {{ click.get('referrer', 'Direct') }}<br>
-                            <strong>Time:</strong> {{ click.get('timestamp', 'Unknown') }}
-                        </li>
-                        {% endfor %}
-                    </ul>
+                    <div class="clickss" id="row-{{ loop.index + start }}">
+                        <ul>
+                            {% for click in item.clicks %}
+                            <li>
+                                <strong>Device:</strong> {{ click.get('device', 'Unknown') }}<br>
+                                <strong>OS:</strong> {{ click.get('os', 'Unknown') }}<br>
+                                <strong>Browser:</strong> {{ click.get('browser', 'Unknown') }}<br>
+                                <strong>Location:</strong> {{ click.get('city', 'Unknown') }}, {{ click.get('region', 'Unknown') }}, {{ click.get('country', 'Unknown') }}<br>
+                                <strong>Referrer:</strong> {{ click.get('referrer', 'Direct') }}<br>
+                                <strong>Time:</strong> {{ click.get('timestamp', 'Unknown') }}
+                            </li>
+                            {% endfor %}
+                            
+                        </ul>
+                        
+                    </div>
+                    <span class="read-more" id="span-{{ loop.index + start }}" onclick="toggleClickCell('{{ loop.index + start }}')">Read More</span>
+                    
                 </td>
                 <td>
                     <img src="{{ url_for('generate_qr', short_url=item.short_url.split('/')[-1]) }}" alt="QR Code" class="qr-code">
@@ -125,18 +94,25 @@
         </tbody>
     </table>
 
-    <!-- Click trends graph -->
-    <div class="click-trends">
-        <h2>Click Trends</h2>
-        <img src="{{ plot_url }}" alt="Click Trends">
-    </div>
-
     <!-- Pagination -->
     <div class="pagination">
         {% if end < total %}
             <a href="{{ url_for('dashboard', page=page + 1) }}">More</a>
         {% endif %}
     </div>
+
+
+    <!-- Click trends graph -->
+    <div class="click-trends">
+        <h2>Click Trends</h2>
+        <img src="data:image/png;base64,{{ plot_base64 }}" alt="Click Trends">
+    </div>
+    <!-- Bar graph for clicks per URL -->
+    <div class="bar-graph">
+        <h2>Clicks per Shortened URL</h2>
+        <img src="data:image/png;base64,{{ bar_graph_base64 }}" alt="Clicks per Shortened URL">
+    </div>
+
 
     <!-- Action buttons -->
     <div class="action-buttons">
@@ -151,6 +127,26 @@
             navigator.clipboard.writeText(text).then(() => {
                 alert("Copied to clipboard: " + text);
             });
+        }
+    <!-- JavaScript for "Read More/Read Less" -->
+        // Toggle expand/collapse for URLs
+        function toggleExpand(element) {
+            element.classList.toggle("expanded");
+        }
+
+        // Toggle expand/collapse for "Clicks" column
+        function toggleClickCell(id_tag) {
+            console.log(id_tag)
+            const element = document.getElementById("row-"+id_tag);
+            const toggleText = document.getElementById("span-"+id_tag);
+            if (!element.classList.contains('height-auto')) {
+                element.classList.add('height-auto');
+                toggleText.textContent = "Read Less";
+            }
+            else{element.classList.remove('height-auto');
+                toggleText.textContent = "Read More";
+            }
+
         }
     </script>
 </body>

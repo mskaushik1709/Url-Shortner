@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import csv
 from io import StringIO
 from user_agents import parse
-
+from flask_mail import Mail, Message
 from io import BytesIO
 import qrcode
 
@@ -15,10 +15,27 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from io import BytesIO
 
+import base64
+
+
 
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Required for session management
+
+
+
+# Flask-Mail configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Replace with your email server
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'your-email@gmail.com'  # Replace with your email
+app.config['MAIL_PASSWORD'] = 'your-email-password'  # Replace with your email password
+app.config['MAIL_DEFAULT_SENDER'] = 'your-email@gmail.com'  # Replace with your email
+
+mail = Mail(app)
+
+
 
 # File paths
 USERS_FILE = "data/users.json"
@@ -47,12 +64,152 @@ def save_json(file, data):
 def generate_short_url():
     return str(uuid.uuid4())[:8]
 
+# Extract domain name from URL
+def extract_domain(url):
+    from urllib.parse import urlparse
+    parsed_url = urlparse(url)
+    return parsed_url.netloc or "Unknown Domain"
+
+
 # Home page (redirect to login if not authenticated)
 @app.route("/")
 def index():
     if "username" not in session:
         return redirect(url_for("login"))
     return render_template("index.html")
+
+
+
+def send_expiration_notification(username, email, short_url, original_url, expires_at):
+    subject = "Link Expiration Notification"
+    body = f"""
+    Hello {username},
+
+    Your shortened URL is about to expire.
+
+    Short URL: {short_url}
+    Original URL: {original_url}
+    Expiration Date: {expires_at}
+
+    Please take necessary action.
+
+    Regards,
+    URL Shortener Team
+    """
+    msg = Message(subject, recipients=[email], body=body)
+    mail.send(msg)
+
+
+
+
+# Check for expiring links and send notifications
+def check_expiring_links():
+    urls = load_json(URLS_FILE)
+    users = load_json(USERS_FILE)
+
+    for short_url, data in urls.items():
+        if data["expires_at"]:
+            expires_at = datetime.strptime(data["expires_at"], "%Y-%m-%d %H:%M:%S")
+            if datetime.now() > expires_at - timedelta(days=1):  # Notify 1 day before expiration
+                username = data["created_by"]
+                user_email = users.get(username, {}).get("email")  # Assuming email is stored in users.json
+                if user_email:
+                    send_expiration_notification(username, user_email, data["short_url"], data["original_url"], data["expires_at"])
+
+
+
+
+# Bulk URL Shortening
+@app.route("/bulk-shorten", methods=["POST"])
+def bulk_shorten():
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    if 'file' not in request.files:
+        return "No file uploaded", 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return "No file selected", 400
+
+    if file and file.filename.endswith(('.csv', '.xlsx', '.ods')):
+        urls = load_json(URLS_FILE)
+        users = load_json(USERS_FILE)
+        username = session["username"]
+
+        # Read the file based on its format
+        if file.filename.endswith('.csv'):
+            csv_data = file.read().decode("utf-8")
+            csv_reader = csv.reader(StringIO(csv_data))
+            rows = list(csv_reader)
+        elif file.filename.endswith('.xlsx'):
+            df = pd.read_excel(file)
+            rows = df.values.tolist()
+        elif file.filename.endswith('.ods'):
+            df = pd.read_excel(file, engine='odf')
+            rows = df.values.tolist()
+
+        shortened_urls = []
+
+        for i, row in enumerate(rows):
+            original_url = row[0]
+            if not original_url:
+                continue
+
+            # Generate a short URL
+            short_url = generate_short_url()
+            default_name = f"ExcelData{i+1}"
+            urls[short_url] = {
+                "short_url": f"http://localhost:5000/{short_url}",
+                "original_url": original_url,
+                "name": default_name,  # Default name
+                "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "expires_at": None,  # No expiration by default
+                "clicks": [],
+                "created_by": username
+            }
+            shortened_urls.append([original_url, f"http://localhost:5000/{short_url}", default_name])
+
+        # Save the updated URLs
+        save_json(URLS_FILE, urls)
+
+        # Add the short URLs to the user's history
+        users[username]["history"].extend([short_url for _, short_url, _ in shortened_urls])
+        save_json(USERS_FILE, users)
+
+        # Create a CSV response for the shortened URLs
+        csv_output = StringIO()
+        csv_writer = csv.writer(csv_output)
+        csv_writer.writerow(["Original URL", "Shortened URL", "Name"])
+        csv_writer.writerows(shortened_urls)
+
+        response = make_response(csv_output.getvalue())
+        response.headers["Content-Disposition"] = "attachment; filename=shortened_urls.csv"
+        response.headers["Content-type"] = "text/csv"
+        return response
+
+    return "Invalid file format. Please upload a CSV, XLSX, or ODS file.", 400
+
+
+# Update URL name
+@app.route("/update-name/<short_url>", methods=["POST"])
+def update_name(short_url):
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    new_name = request.form.get("name")
+    if not new_name:
+        return "Name is required", 400
+
+    urls = load_json(URLS_FILE)
+    if short_url in urls and urls[short_url]["created_by"] == session["username"]:
+        urls[short_url]["name"] = new_name
+        save_json(URLS_FILE, urls)
+        return redirect(url_for("dashboard"))
+
+    return "URL not found", 404
+
+
 
 # Shorten URL (protected route)
 @app.route("/shorten", methods=["POST"])
@@ -272,12 +429,20 @@ def redirect_to_original(short_url):
     os = f"{user_agent.os.family} {user_agent.os.version_string}"
     browser = f"{user_agent.browser.family} {user_agent.browser.version_string}"
 
+    # Get geolocation data
+    ip = request.remote_addr
+    city, region, country = get_geolocation(ip)
+
     # Add click details
     click_data = {
         "device": device,
         "os": os,
         "browser": browser,
-        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "city": city,
+        "region": region,
+        "country": country,
+        "referrer": request.referrer or "Direct"
     }
 
     # Ensure clicks is a list
@@ -314,7 +479,36 @@ def generate_click_trends(clicks):
     buf = BytesIO()
     plt.savefig(buf, format="png")
     buf.seek(0)
-    return buf
+    plt.close()  # Close the plot to free up memory
+
+    # Encode the plot as base64
+    plot_base64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+    return plot_base64
+
+def generate_bar_graph(user_history):
+    # Extract data for the bar graph
+    urls = [item["short_url"].split("/")[-1] for item in user_history]  # Short URLs
+    clicks = [len(item["clicks"]) for item in user_history]  # Number of clicks per URL
+
+    # Create the bar graph
+    plt.figure(figsize=(10, 5))
+    plt.bar(urls, clicks, color='skyblue')
+    plt.xlabel("Short URLs")
+    plt.ylabel("Number of Clicks")
+    plt.title("Clicks per Shortened URL")
+    plt.xticks(rotation=45, ha="right")  # Rotate x-axis labels for better readability
+    plt.tight_layout()
+
+    # Save the plot to a BytesIO object
+    buf = BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    plt.close()  # Close the plot to free up memory
+
+    # Encode the plot as base64
+    plot_base64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+    return plot_base64
+
 
 # Update the dashboard route to include the click trends graph
 @app.route("/dashboard")
@@ -337,8 +531,10 @@ def dashboard(page=1):
     all_clicks = []
     for item in user_history:
         all_clicks.extend(item["clicks"])
-    plot_buf = generate_click_trends(all_clicks)
-    plot_url = f"data:image/png;base64,{plot_buf.getvalue().hex()}"
+    plot_base64 = generate_click_trends(all_clicks)
+
+    # Generate bar graph for clicks per URL
+    bar_graph_base64 = generate_bar_graph(user_history)
 
     # Pagination logic
     per_page = 10
@@ -354,8 +550,22 @@ def dashboard(page=1):
         end=end,
         total=total,
         page=page,
-        plot_url=plot_url
+        plot_base64=plot_base64,
+        bar_graph_base64=bar_graph_base64  # Pass the bar graph to the template
     )
+
+'''from apscheduler.schedulers.background import BackgroundScheduler
+
+# Initialize scheduler
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=check_expiring_links, trigger="interval", days=1)  # Run daily
+scheduler.start()
+
+# Ensure the scheduler shuts down when the app stops
+@app.teardown_appcontext
+def shutdown_scheduler(exception=None):
+    scheduler.shutdown()'''
+
 
 if __name__ == "__main__":
     app.run(debug=True)
