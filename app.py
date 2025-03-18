@@ -37,6 +37,7 @@ mail = Mail(app)
 
 
 
+
 # File paths
 USERS_FILE = "data/users.json"
 URLS_FILE = "data/urls.json"
