@@ -23,13 +23,6 @@ import base64
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Required for session management
 
-
-
-
-
-
-
-
 # Flask-Mail configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Replace with your email server
 app.config['MAIL_PORT'] = 587
