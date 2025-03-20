@@ -1,8 +1,7 @@
 import os
-import schedule
+#import schedule
 import time
 from datetime import datetime
-
 
 def git_push():
     try:
@@ -15,7 +14,6 @@ def git_push():
         if not status:
             print("No changes detected. Skipping commit and push.")
             return
-
 
         # Git commands
         os.system("git add .")
