@@ -51,6 +51,7 @@ table {
     table-layout: fixed; /* Prevent table from expanding */
 }
 
+
 td {
     width: 200px;
     height: 50px; /* Fix row height */
