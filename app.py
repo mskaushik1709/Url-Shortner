@@ -9,13 +9,49 @@ from user_agents import parse
 from flask_mail import Mail, Message
 from io import BytesIO
 import qrcode
-
 import requests
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from io import BytesIO
-
 import base64
+
+
+
+
+from bs4 import BeautifulSoup
+import requests
+
+def fetch_url_metadata(url):
+    try:
+        response = requests.get(url, timeout=10)
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        title = soup.title.string if soup.title else "No Title"
+        description = soup.find("meta", attrs={"name": "description"})
+        description = description["content"] if description else "No Description"
+        thumbnail = soup.find("meta", attrs={"property": "og:image"})
+        thumbnail = thumbnail["content"] if thumbnail else None
+
+        return {
+            "title": title,
+            "description": description,
+            "thumbnail": thumbnail
+        }
+    except Exception as e:
+        return {
+            "title": "No Title",
+            "description": "No Description",
+            "thumbnail": None
+        }
+
+
+
+
+
+
+
+
+
 
 
 app = Flask(__name__)
@@ -30,10 +66,6 @@ app.config['MAIL_PASSWORD'] = 'your-email-password'  # Replace with your email p
 app.config['MAIL_DEFAULT_SENDER'] = 'your-email@gmail.com'  # Replace with your email
 
 mail = Mail(app)
-
-
-
-
 
 # File paths
 USERS_FILE = "data/users.json"
@@ -96,8 +128,6 @@ def send_expiration_notification(username, email, short_url, original_url, expir
     """
     msg = Message(subject, recipients=[email], body=body)
     mail.send(msg)
-
-
 
 
 # Check for expiring links and send notifications
@@ -209,6 +239,24 @@ def update_name(short_url):
 
 
 
+# @app.route("/<short_url>")
+# def redirect_to_original(short_url):
+#     urls = load_json(URLS_FILE)
+#     if short_url not in urls:
+#         abort(404)
+
+#     url_data = urls[short_url]
+
+#     # Check if the URL is password-protected
+#     if url_data.get("password"):
+#         password = request.args.get("password")
+#         if password != url_data["password"]:
+#             return render_template("password_prompt.html", short_url=short_url)
+
+#     return redirect(url_data["original_url"])
+
+
+
 # Shorten URL (protected route)
 @app.route("/shorten", methods=["POST"])
 def shorten_url():
@@ -218,11 +266,16 @@ def shorten_url():
     original_url = request.form.get("url")
     custom_short_url = request.form.get("custom_short_url")
     expiration_days = request.form.get("expiration_days")
+    password = request.form.get("password")
 
     if not original_url:
         return "URL is required", 400
 
     urls = load_json(URLS_FILE)
+
+    # Fetch metadata
+    metadata = fetch_url_metadata(original_url)
+
 
     # Check if the custom short URL is already taken
     if custom_short_url:
@@ -250,7 +303,9 @@ def shorten_url():
         "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "expires_at": expires_at,  # Set expiration date (or None if no expiration)
         "clicks": [],
-        "created_by": session["username"]  # Track which user created the short URL
+        "created_by": session["username"],  # Track which user created the short URL
+        "metadata": metadata,  # Store metadata
+        "password": password
     }
     save_json(URLS_FILE, urls)
 
@@ -411,8 +466,15 @@ def redirect_to_original(short_url):
     if short_url not in urls:
         abort(404)
 
-    # Check if the URL has expired
     url_data = urls[short_url]
+
+    # Check if the URL is password-protected
+    if url_data.get("password"):
+        password = request.args.get("password")
+        if password != url_data["password"]:
+            return render_template("password_prompt.html", short_url=short_url)
+
+    # Check if the URL has expired
     if url_data["expires_at"]:
         expires_at = datetime.strptime(url_data["expires_at"], "%Y-%m-%d %H:%M:%S")
         if datetime.now() > expires_at:
@@ -451,7 +513,6 @@ def redirect_to_original(short_url):
     save_json(URLS_FILE, urls)
 
     return redirect(url_data["original_url"])
-
 # Generate click trends graph
 def generate_click_trends(clicks):
     click_dates = [datetime.strptime(click["timestamp"], "%Y-%m-%d %H:%M:%S").date() for click in clicks]
@@ -523,6 +584,14 @@ def dashboard(page=1):
     user_history = []
     for short_url in users[username]["history"]:
         if short_url in urls:
+            url_data = urls[short_url]
+            # Ensure metadata exists
+            if "metadata" not in url_data:
+                url_data["metadata"] = {
+                    "title": "No Title",
+                    "description": "No Description",
+                    "thumbnail": None
+                }
             user_history.append(urls[short_url])
 
     # Generate click trends graph

@@ -30,6 +30,7 @@
                 <th>Clicks</th>
                 <th>QR Code</th>
                 <th>Action</th>
+                <th>Metadata</th>
             </tr>
         </thead>
         <tbody>
@@ -43,9 +44,6 @@
                         <button type="submit">Save</button>
                     </form>
                 </td>
-
-
-                
                 <td>
                     <span class="truncate" onclick="toggleExpand(this)">{{ item.short_url }}</span>
                     <button class="copy-btn" onclick="copyToClipboard('{{ item.short_url }}')">Copy</button>
@@ -54,8 +52,6 @@
                     <span class="truncate" onclick="toggleExpand(this)">{{ item.original_url }}</span>
                     <button class="copy-btn" onclick="copyToClipboard('{{ item.original_url }}')">Copy</button>
                 </td>
-
-
                 <td>{{ item.created_at }}</td>
                 <td>{{ item.expires_at or "No expiration" }}</td>
                 <td>{{ item.clicks|length }}</td>
@@ -72,12 +68,9 @@
                                 <strong>Time:</strong> {{ click.get('timestamp', 'Unknown') }}
                             </li>
                             {% endfor %}
-                            
                         </ul>
-                        
                     </div>
                     <span class="read-more" id="span-{{ loop.index + start }}" onclick="toggleClickCell('{{ loop.index + start }}')">Read More</span>
-                    
                 </td>
                 <td>
                     <img src="{{ url_for('generate_qr', short_url=item.short_url.split('/')[-1]) }}" alt="QR Code" class="qr-code">
@@ -88,6 +81,13 @@
                     <form action="{{ url_for('delete_history', short_url=item.short_url.split('/')[-1]) }}" method="POST">
                         <button type="submit">Delete</button>
                     </form>
+                </td>
+                <td>
+                    <strong>Title:</strong> {{ item.metadata.title | default("No Title") }}<br>
+                    <strong>Description:</strong> {{ item.metadata.description | default("No Description") }}<br>
+                    {% if item.metadata.thumbnail %}
+                    <img src="{{ item.metadata.thumbnail }}" alt="Thumbnail" style="max-width: 100px;">
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
@@ -101,18 +101,17 @@
         {% endif %}
     </div>
 
-
     <!-- Click trends graph -->
     <div class="click-trends">
         <h2>Click Trends</h2>
         <img src="data:image/png;base64,{{ plot_base64 }}" alt="Click Trends">
     </div>
+
     <!-- Bar graph for clicks per URL -->
     <div class="bar-graph">
         <h2>Clicks per Shortened URL</h2>
         <img src="data:image/png;base64,{{ bar_graph_base64 }}" alt="Clicks per Shortened URL">
     </div>
-
 
     <!-- Action buttons -->
     <div class="action-buttons">
@@ -128,7 +127,7 @@
                 alert("Copied to clipboard: " + text);
             });
         }
-    <!-- JavaScript for "Read More/Read Less" -->
+
         // Toggle expand/collapse for URLs
         function toggleExpand(element) {
             element.classList.toggle("expanded");
@@ -136,17 +135,15 @@
 
         // Toggle expand/collapse for "Clicks" column
         function toggleClickCell(id_tag) {
-            console.log(id_tag)
-            const element = document.getElementById("row-"+id_tag);
-            const toggleText = document.getElementById("span-"+id_tag);
+            const element = document.getElementById("row-" + id_tag);
+            const toggleText = document.getElementById("span-" + id_tag);
             if (!element.classList.contains('height-auto')) {
                 element.classList.add('height-auto');
                 toggleText.textContent = "Read Less";
-            }
-            else{element.classList.remove('height-auto');
+            } else {
+                element.classList.remove('height-auto');
                 toggleText.textContent = "Read More";
             }
-
         }
     </script>
 </body>
