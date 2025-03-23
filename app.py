@@ -44,15 +44,7 @@ def fetch_url_metadata(url):
             "thumbnail": None
         }
 
-
-
-
-
-
-
-
-
-
+#flask
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Required for session management
