@@ -241,5 +241,66 @@
         "expires_at": null,
         "clicks": [],
         "created_by": "msk"
+    },
+    "sample": {
+        "short_url": "http://localhost:5000/sample",
+        "original_url": "https://www.eventbrite.com/e/test-automation-summit-bangalore-2025-tickets-1280571607149?aff=ebdssbdestsearch&_gl=1*1shwdeo*_up*MQ..*_ga*MTc1MTY4MjA3NS4xNzQyNjY1MjAy*_ga_TQVES5V6SH*MTc0MjY2NTIwMS4xLjAuMTc0MjY2NTIwMS4wLjAuMA..",
+        "created_at": "2025-03-23 22:49:04",
+        "expires_at": null,
+        "clicks": [
+            {
+                "device": "Other",
+                "os": "Linux ",
+                "browser": "Firefox 130.0",
+                "timestamp": "2025-03-23 22:49:34",
+                "city": "Unknown",
+                "region": "Unknown",
+                "country": "Unknown",
+                "referrer": "Direct"
+            },
+            {
+                "device": "Other",
+                "os": "Linux ",
+                "browser": "Firefox 130.0",
+                "timestamp": "2025-03-23 22:51:15",
+                "city": "Unknown",
+                "region": "Unknown",
+                "country": "Unknown",
+                "referrer": "Direct"
+            }
+        ],
+        "created_by": "msk",
+        "metadata": {
+            "title": "\n\t\t\t\tTest Automation Summit | Bangalore| 2025 Tickets, Fri, Jun 27, 2025 at 9:00 AM | Eventbrite\n\t\t\t ",
+            "description": "Eventbrite - TESTINGMIND presents Test Automation Summit | Bangalore| 2025 - Friday, June 27, 2025 at Bengaluru, Bengaluru, KA. Find event and ticket information.",
+            "thumbnail": "https://cdn.evbuc.com/images/981653813/1791063259783/1/logo.20250312-102525"
+        },
+        "password": null
+    },
+    "ipl": {
+        "short_url": "http://localhost:5000/ipl",
+        "original_url": "https://www.google.com/search?client=firefox-b-d&q=ipl",
+        "created_at": "2025-03-23 23:48:06",
+        "expires_at": null,
+        "clicks": [
+            {
+                "device": "Other",
+                "os": "Linux ",
+                "browser": "Firefox 130.0",
+                "timestamp": "2025-03-23 23:48:58",
+                "city": "Unknown",
+                "region": "Unknown",
+                "country": "Unknown",
+                "referrer": "Direct"
+            }
+        ],
+        "created_by": "msk",
+        "metadata": {
+            "title": "Google Search",
+            "description": "No Description",
+            "thumbnail": null
+        },
+        "password": null,
+        "name": "i"
     }
 }
