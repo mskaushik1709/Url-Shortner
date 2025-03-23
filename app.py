@@ -18,8 +18,6 @@ from io import BytesIO
 import base64
 
 
-
-
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Required for session management
 
