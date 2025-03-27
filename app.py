@@ -46,8 +46,6 @@ def fetch_url_metadata(url):
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # Required for session management
 
-
-# dusted
 # Flask-Mail configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Replace with your email server
 app.config['MAIL_PORT'] = 587
