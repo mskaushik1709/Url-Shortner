@@ -21,6 +21,9 @@ import base64
 from bs4 import BeautifulSoup
 import requests
 
+
+
+
 def fetch_url_metadata(url):
     try:
         response = requests.get(url, timeout=10)
