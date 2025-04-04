@@ -4,8 +4,6 @@ import os
 from datetime import datetime
 
 
-
-
 def git_push():
     try:
         # Navigate to the repository directory
