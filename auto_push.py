@@ -3,7 +3,6 @@ import os
 #import time
 from datetime import datetime
 
-
 def git_push():
     try:
         # Navigate to the repository directory
