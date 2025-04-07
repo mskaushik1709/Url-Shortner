@@ -13,7 +13,6 @@ def git_push():
         if not status:
             print("No changes detected. Skipping commit and push.")
             return
-
         # Git commands
         os.system("git add .")
         os.system('git commit -m "Auto-commit on {}"'.format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
