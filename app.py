@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from io import BytesIO
 import base64
+
+
 from bs4 import BeautifulSoup
 import requests
 
