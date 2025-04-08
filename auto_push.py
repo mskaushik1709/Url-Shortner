@@ -24,7 +24,6 @@ def git_push():
 
 # Schedule the task to run every 24 hours
 #schedule.every(24).hours.do(git_push)
-
 # Run the scheduler
 # while True:
 #     schedule.run_pending()
