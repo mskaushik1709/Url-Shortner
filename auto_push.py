@@ -21,6 +21,8 @@ def git_push():
         print("Changes pushed to GitHub successfully!")
     except Exception as e:
         print(f"An error occurred: {e}")
+
+        
 # Schedule the task to run every 24 hours
 #schedule.every(24).hours.do(git_push)
 # Run the scheduler
