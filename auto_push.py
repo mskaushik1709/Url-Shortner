@@ -17,7 +17,6 @@ def git_push():
         os.system("git add .")
         os.system('git commit -m "Auto-commit on {}"'.format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         os.system("git push origin merge-branch")  # Replace "main" with your branch name if different
-
         print("Changes pushed to GitHub successfully!")
     except Exception as e:
         print(f"An error occurred: {e}")
